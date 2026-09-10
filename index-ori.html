@@ -1,10 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Perhitungan & Perbandingan Neptu Weton</title>
+    
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#312e81">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hitung Rejeki">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts & FontAwesome Icons -->
@@ -47,15 +58,27 @@
 <body class="bg-slate-50 min-h-screen text-slate-800 antialiased pb-12">
 
     <!-- Header -->
-    <header class="bg-indigo-900 text-white py-8 px-4 shadow-md no-print border-b-4 border-amber-500">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="inline-flex items-center justify-center w-12 h-12 bg-amber-500 text-indigo-950 rounded-full mb-3 text-2xl shadow-lg">
-                <i class="fa-solid fa-compass"></i>
+    <header class="bg-indigo-900 text-white py-6 px-4 shadow-md no-print border-b-4 border-amber-500 relative">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-center sm:text-left">
+                <img src="logo.jpg" alt="Logo Hitung Rejeki" class="w-16 h-16 rounded-2xl border-2 border-amber-400 shadow-md object-cover flex-shrink-0">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Kalkulator & Perbandingan Neptu Weton</h1>
+                    <p class="text-indigo-200 text-xs sm:text-sm mt-0.5 max-w-2xl">
+                        Analisis Neptu, Weton Jawa, dan Grafik Potensi Rezeki Berdasarkan Usia
+                    </p>
+                </div>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Kalkulator & Perbandingan Neptu Weton</h1>
-            <p class="text-indigo-200 text-sm sm:text-base mt-1 max-w-2xl mx-auto">
-                Analisis Neptu, Weton Jawa, dan Grafik Potensi Rezeki Berdasarkan Usia Hingga 4 Orang
-            </p>
+            
+            <div class="flex items-center gap-2">
+                <!-- PWA Install Button -->
+                <button id="btnPWAInstall" class="hidden px-4 py-2 bg-amber-500 hover:bg-amber-400 text-indigo-950 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-download"></i> Install App
+                </button>
+                <div id="connectionBadge" class="hidden px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-800 text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online
+                </div>
+            </div>
         </div>
     </header>
 
@@ -713,6 +736,68 @@
                 alert('Gagal mengunduh PDF: ' + err.message);
             }
         }
+
+        // -------------------------------------------------------------
+        // Progressive Web App (PWA) & Service Worker Integration
+        // -------------------------------------------------------------
+        let deferredPrompt;
+        const btnPWAInstall = document.getElementById('btnPWAInstall');
+        const connectionBadge = document.getElementById('connectionBadge');
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('PWA Service Worker registered successfully:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.warn('PWA Service Worker registration failed:', err);
+                    });
+            });
+        }
+
+        // PWA Install Prompt Listener
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (btnPWAInstall) {
+                btnPWAInstall.classList.remove('hidden');
+            }
+        });
+
+        if (btnPWAInstall) {
+            btnPWAInstall.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to install prompt: ${outcome}`);
+                deferredPrompt = null;
+                btnPWAInstall.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was successfully installed');
+            if (btnPWAInstall) btnPWAInstall.classList.add('hidden');
+        });
+
+        // Online / Offline Status Handler
+        function updateOnlineStatus() {
+            if (!connectionBadge) return;
+            connectionBadge.classList.remove('hidden');
+            if (navigator.onLine) {
+                connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online`;
+                connectionBadge.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-800 text-slate-300";
+            } else {
+                connectionBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Offline`;
+                connectionBadge.className = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-amber-900 text-amber-200";
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
     </script>
 </body>
 </html>
