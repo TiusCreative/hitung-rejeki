@@ -1,7 +1,9 @@
-const CACHE_NAME = 'hitung-rejeki-v1';
+const CACHE_NAME = 'hitung-rejeki-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './login.html',
+  './auth.js',
   './manifest.json',
   './logo.jpg',
   './icon-192.png',

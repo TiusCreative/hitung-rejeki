@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Aplikasi Hitung Rejeki Weton</title>
+    
+    <!-- PWA Meta & Favicon -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Separate Auth JavaScript Module -->
+    <script src="auth.js"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden antialiased">
+
+    <!-- Background Decorative Gradient Orbs -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <main class="w-full max-w-md relative z-10">
+        
+        <!-- Login Container Card -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200/50">
+            
+            <!-- Header Logo & Title -->
+            <div class="text-center mb-8">
+                <div class="inline-block relative mb-3">
+                    <img src="logo.jpg" alt="Logo Hitung Rejeki" 
+                        class="w-20 h-20 rounded-2xl mx-auto border-4 border-amber-400 shadow-xl object-cover">
+                    <span class="absolute -bottom-1 -right-1 bg-amber-500 text-indigo-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow border border-white uppercase tracking-wider">
+                        PRO
+                    </span>
+                </div>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Hitung Rejeki Weton</h1>
+                <p class="text-xs text-slate-500 mt-1">Silakan masuk menggunakan email terdaftar Anda</p>
+            </div>
+
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                
+                <!-- Email Field -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email *</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-at"></i>
+                        </span>
+                        <input type="email" id="inputEmail" placeholder="nama@email.com" required
+                            class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600 transition">
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-slate-700">Kata Sandi *</label>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="inputPassword" placeholder="Masukkan kata sandi" required
+                            class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600 transition">
+                        <button type="button" onclick="togglePasswordVisibility()" 
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                            <i id="togglePassIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center justify-between pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-600 select-none">
+                        <input type="checkbox" id="chkRememberMe" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                        Ingat Saya di Perangkat Ini
+                    </label>
+                </div>
+
+                <!-- Error Alert Box -->
+                <div id="loginAlert" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-exclamation text-sm mt-0.5 flex-shrink-0"></i>
+                    <span id="loginAlertText">Email tidak diizinkan.</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btnSubmitLogin"
+                    class="w-full py-3 px-4 bg-indigo-900 hover:bg-indigo-800 active:bg-indigo-950 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-900/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+                </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 text-center text-[11px] text-slate-400">
+                Aplikasi Perhitungan Primbon Jawa & Neptu Weton Modern
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Restrict / Redirect if already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof checkAlreadyLoggedIn === 'function') {
+                checkAlreadyLoggedIn();
+            }
+        });
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('inputPassword');
+            const passIcon = document.getElementById('togglePassIcon');
+            if (!passInput) return;
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                passIcon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                passIcon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function showAlert(msg) {
+            const alertBox = document.getElementById('loginAlert');
+            const alertText = document.getElementById('loginAlertText');
+            if (alertBox && alertText) {
+                alertText.innerText = msg;
+                alertBox.classList.remove('hidden');
+            }
+        }
+
+        function hideAlert() {
+            const alertBox = document.getElementById('loginAlert');
+            if (alertBox) alertBox.classList.add('hidden');
+        }
+
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            hideAlert();
+
+            const email = document.getElementById('inputEmail').value;
+            const password = document.getElementById('inputPassword').value;
+            const rememberMe = document.getElementById('chkRememberMe').checked;
+
+            const result = loginUser(email, password, rememberMe);
+
+            if (result.success) {
+                const btn = document.getElementById('btnSubmitLogin');
+                btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Berhasil, Mengalihkan...`;
+                btn.disabled = true;
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 400);
+            } else {
+                showAlert(result.message);
+            }
+        }
+    </script>
+</body>
+</html>
