@@ -16,6 +16,13 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
+    <!-- Separate Auth JavaScript Module -->
+    <script src="auth.js"></script>
+    <script>
+        // Check Auth Guard before rendering
+        const loggedInUser = checkAuthGuard();
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts & FontAwesome Icons -->
@@ -59,8 +66,8 @@
 
     <!-- Header -->
     <header class="bg-indigo-900 text-white py-6 px-4 shadow-md no-print border-b-4 border-amber-500 relative">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4 text-center sm:text-left">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-center md:text-left">
                 <img src="logo.jpg" alt="Logo Hitung Rejeki" class="w-16 h-16 rounded-2xl border-2 border-amber-400 shadow-md object-cover flex-shrink-0">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Kalkulator & Perbandingan Neptu Weton</h1>
@@ -70,11 +77,23 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center justify-center md:justify-end gap-2">
+                <!-- User Profile Badge -->
+                <div id="userBadge" class="px-3 py-1.5 bg-indigo-950/80 border border-indigo-700/60 text-amber-300 text-xs font-semibold rounded-xl flex items-center gap-2 shadow-inner">
+                    <i class="fa-solid fa-circle-user text-sm text-amber-400"></i>
+                    <span id="userBadgeEmail">Loading...</span>
+                </div>
+
+                <!-- Logout Button -->
+                <button onclick="logoutUser()" title="Keluar Aplikasi" class="px-3 py-1.5 bg-red-600/90 hover:bg-red-600 text-white font-semibold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+
                 <!-- PWA Install Button -->
-                <button id="btnPWAInstall" class="hidden px-4 py-2 bg-amber-500 hover:bg-amber-400 text-indigo-950 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center gap-2">
+                <button id="btnPWAInstall" class="hidden px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-indigo-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-1.5">
                     <i class="fa-solid fa-download"></i> Install App
                 </button>
+
                 <div id="connectionBadge" class="hidden px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-slate-800 text-slate-300">
                     <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online
                 </div>
@@ -342,6 +361,13 @@
         let activeCalculatedData = [];
 
         window.onload = function() {
+            // Update user badge
+            const user = getLoggedInUser();
+            if (user) {
+                const badge = document.getElementById('userBadgeEmail');
+                if (badge) badge.innerText = user.email;
+            }
+
             // Initialize with 2 default profile inputs for easy comparison
             addProfileInput();
             addProfileInput();
